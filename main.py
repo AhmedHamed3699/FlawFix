@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
 
-from core.utils.preprocessing import adjust_brightness_to_range
 from core.utils.common_functions import show_images
+from core.utils.preprocessing import adjust_brightness_to_range, rgb_median_filter
 
 def main():
     parser = argparse.ArgumentParser()
@@ -27,9 +27,9 @@ def main():
 
     ################################ PREPROCESSING ################################
     brightness_adjusted_image = adjust_brightness_to_range(image)
-
-    show_images([brightness_adjusted_image], ['brightness_adjusted_image'])
-
+    noise_removed_image = rgb_median_filter(brightness_adjusted_image,(3,3));
+    
+    show_images([noise_removed_image], ['noise_removed_image'])
 
     ######################## Write Your Function Calls Here #######################
 
