@@ -3,8 +3,24 @@ import cv2
 
 from core.preprocessing.brightness import adjust_brightness_to_range
 from core.preprocessing.contrast import enhance_contrast
-from core.preprocessing.noise_reduction import apply_noise_removal
+from core.preprocessing.noise_reduction import rgb_median_filter, gaussian_filter
 from core.utils.common_functions import show_images
+
+def preprocessing(img):
+
+    brightness_adjusted_image = adjust_brightness_to_range(img)
+    show_images([brightness_adjusted_image], ['brightness_adjusted_image'])
+
+    salt_pepper_noise_removed_img = rgb_median_filter(img, (5,5))
+    show_images([salt_pepper_noise_removed_img], ['salt_pepper_noise_removed_img'])
+
+    noise_removed_image = gaussian_filter(img)
+    show_images([noise_removed_image], ['noise_removed_image'])
+
+    contrast_enhanced_image = enhance_contrast(img)
+    show_images([contrast_enhanced_image], ['contrast_enhanced_image'])
+
+    return contrast_enhanced_image
 
 def main():
     parser = argparse.ArgumentParser()
@@ -23,16 +39,9 @@ def main():
     print("\n🛠️ Processing your image... Please wait...\n")
 
     image = cv2.imread(args.input_image)
-    ################################ PREPROCESSING ################################
-    brightness_adjusted_image = adjust_brightness_to_range(image)
-    show_images([brightness_adjusted_image], ['brightness_adjusted_image'])
+    show_images([image], ['original_image'])
 
-    noise_removed_image = apply_noise_removal(brightness_adjusted_image)
-    show_images([noise_removed_image], ['noise_removed_image'])
-
-    contrast_enhanced_image = enhance_contrast(noise_removed_image)
-    show_images([contrast_enhanced_image], ['contrast_enhanced_image'])
-
+    preprocessing(image)
     ######################## Write Your Function Calls Here #######################
 
     
