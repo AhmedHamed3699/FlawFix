@@ -6,13 +6,15 @@ from core.preprocessing.contrast import enhance_contrast
 from core.preprocessing.noise_reduction import rgb_median_filter, gaussian_filter
 from core.utils.common_functions import show_images
 
+
 def preprocessing(img):
 
     brightness_adjusted_image = adjust_brightness_to_range(img)
     show_images([brightness_adjusted_image], ['brightness_adjusted_image'])
 
-    salt_pepper_noise_removed_img = rgb_median_filter(img, (5,5))
-    show_images([salt_pepper_noise_removed_img], ['salt_pepper_noise_removed_img'])
+    salt_pepper_noise_removed_img = rgb_median_filter(img, (5, 5))
+    show_images([salt_pepper_noise_removed_img], [
+                'salt_pepper_noise_removed_img'])
 
     noise_removed_image = gaussian_filter(img)
     show_images([noise_removed_image], ['noise_removed_image'])
@@ -22,10 +24,12 @@ def preprocessing(img):
 
     return contrast_enhanced_image
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input_image", help="📷 Path to the input image")
-    parser.add_argument("-o", "--output", help="💾 Path to save the adjusted image (optional)")
+    parser.add_argument(
+        "-o", "--output", help="💾 Path to save the adjusted image (optional)")
 
     args = parser.parse_args()
 
@@ -44,10 +48,9 @@ def main():
     preprocessing(image)
     ######################## Write Your Function Calls Here #######################
 
-    
-
     ################################################################################
     print("\nFinished Processing.\n")
+
 
 if __name__ == "__main__":
     main()
