@@ -23,9 +23,6 @@ def scratch_removal(img, resize=False):
         img = cv.resize(img, (0, 0), fx=2, fy=2)
     mask = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    cv.imshow('gray', mask)
-    cv.waitKey(0)
-
     mask = scratch_detection(mask)
 
     result = cv.inpaint(img, mask, 3, cv.INPAINT_TELEA)

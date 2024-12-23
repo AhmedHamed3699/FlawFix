@@ -5,9 +5,12 @@ import cv2
 import time
 
 from core.enhancement.chromatic_aberration import CACorrection
+from core.preprocessing.noise_reduction import apply_noise_removal
+from core.preprocessing.brightness import adjust_brightness_to_range
+from core.preprocessing.contrast import enhance_contrast
+from core.restoration.scratch_removal import scratch_removal
 
 input_image = None
-clicked_process = False
 
 def upload_image():
     """Prompt the user to upload an image."""
@@ -38,23 +41,21 @@ def upload_image():
 def process_image():
     """Call processing functions on the uploaded image."""
     global input_image
-    global clicked_process
-    clicked_process = True
     if input_image is not None :
         if(operations[0].get()): # noise removal
-            pass
+            input_image = apply_noise_removal(input_image, (5, 5))
 
         if(operations[1].get()): # brightness enhancement
-            pass
+            input_image = adjust_brightness_to_range(input_image)
 
-        if(operations[2].get()): # color correction
-            pass
+        if(operations[2].get()): # contrast enhancement
+            input_image = enhance_contrast(input_image)
 
         if(operations[3].get()): # chromatic aberration correction
             input_image = CACorrection(input_image)
 
         if(operations[4].get()): # scratch removal
-            pass
+            input_image = scratch_removal(input_image, True)
 
         # processed_img = input_image
 
@@ -81,7 +82,7 @@ def continue_processing():
 # Create the main window
 root = tk.Tk()
 root.title("FlawFix: Image Processing App")
-root.geometry("1000x800")
+root.geometry("1000x700")
 root.configure(bg="#2c3e50")
 
 # Header with title

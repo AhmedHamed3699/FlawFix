@@ -12,7 +12,7 @@ def analyze_brightness(image):
         raise ValueError("Unsupported image format. Image must be grayscale or RGB.")
     return mean_brightness
 
-def adjust_brightness_to_range(image, brightness_range=(100, 150)):
+def adjust_brightness_to_range(image, brightness_range=(100, 125)):
     if isinstance(image, np.ndarray):
         image = Image.fromarray(image)
 
@@ -29,4 +29,5 @@ def adjust_brightness_to_range(image, brightness_range=(100, 150)):
 
     enhancer = ImageEnhance.Brightness(image)
     adjusted_image = enhancer.enhance(adjustment_factor)
-    return adjusted_image
+
+    return np.array(adjusted_image)
