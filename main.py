@@ -2,7 +2,8 @@ import argparse
 import cv2
 
 from core.preprocessing.brightness import adjust_brightness_to_range
-from core.preprocessing.noise_reduction import apply_noise_removal, rgb_median_filter
+from core.preprocessing.contrast import enhance_contrast
+from core.preprocessing.noise_reduction import apply_noise_removal
 from core.utils.common_functions import show_images
 
 def main():
@@ -28,6 +29,9 @@ def main():
 
     noise_removed_image = apply_noise_removal(brightness_adjusted_image)
     show_images([noise_removed_image], ['noise_removed_image'])
+
+    contrast_enhanced_image = enhance_contrast(noise_removed_image)
+    show_images([contrast_enhanced_image], ['contrast_enhanced_image'])
 
     ######################## Write Your Function Calls Here #######################
 
