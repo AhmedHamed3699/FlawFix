@@ -1,8 +1,28 @@
 import numpy as np
 import cv2 as cv
 
+from core.utils.morphology import dilation, erosion, opening, closing, top_hat
+
 
 def scratch_detection(img):
+
+    # Top Hat
+    ridges = top_hat(img, 5, 5, 'grayscale')
+    mask = cv.normalize(ridges, None, 0, 255, cv.NORM_MINMAX)
+
+    # Thresholding
+    mask = dilation(mask, 7, 7, 'grayscale')
+    _, mask = cv.threshold(mask, 100, 255, cv.THRESH_BINARY)
+
+    # Closing
+    mask = closing(mask, 21, 21)
+
+    # Final Dilation
+    mask = dilation(mask, 5, 5)
+    return mask
+
+
+def scratch_detection_faster(img):
 
     kernel = cv.getStructuringElement(cv.MORPH_RECT, (5, 5))
     ridges = cv.morphologyEx(img, cv.MORPH_TOPHAT, kernel)
@@ -18,12 +38,10 @@ def scratch_detection(img):
     return mask
 
 
-def scratch_removal(img, resize=False):
-    if resize:
-        img = cv.resize(img, (0, 0), fx=2, fy=2)
+def scratch_removal(img):
     mask = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    mask = scratch_detection(mask)
+    mask = scratch_detection_faster(mask)
 
     result = cv.inpaint(img, mask, 3, cv.INPAINT_TELEA)
     return result
