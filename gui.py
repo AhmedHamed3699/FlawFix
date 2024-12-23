@@ -1,84 +1,141 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
 from PIL import Image, ImageTk, ImageFilter
+import cv2
+import time
+
+from core.enhancement.chromatic_aberration import CACorrection
+
+input_image = None
+clicked_process = False
 
 def upload_image():
     """Prompt the user to upload an image."""
+    after_img_label.config(image=None)
+    after_img_label.image = None
+
     file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.png;*.jpeg")])
     if file_path:
         # Open and display the uploaded image
-        uploaded_img = Image.open(file_path)
+        # uploaded_img = Image.open(file_path)
+        uploaded_img_cv = cv2.imread(file_path, cv2.IMREAD_COLOR)
+
+        # Step 2: Convert from BGR to RGB
+        rgb_image = cv2.cvtColor(uploaded_img_cv, cv2.COLOR_BGR2RGB)
+
+        # Step 3: Convert the NumPy array to a PIL image
+        uploaded_img = Image.fromarray(rgb_image)
+
         uploaded_img.thumbnail((300, 300))  # Resize for display purposes
         uploaded_img_tk = ImageTk.PhotoImage(uploaded_img)
-        label_uploaded_img.config(image=uploaded_img_tk)
-        label_uploaded_img.image = uploaded_img_tk
+        before_img_label.config(image=uploaded_img_tk)
+        before_img_label.image = uploaded_img_tk
         
         # Save for processing
         global input_image
-        input_image = uploaded_img
-
+        input_image = uploaded_img_cv
+        
 def process_image():
     """Call processing functions on the uploaded image."""
-    if input_image:
-        ###
-        processed_img = input_image.filter(ImageFilter.BLUR)
-        processed_img.thumbnail((300, 300))  # Resize for display purposes
-        
+    global input_image
+    global clicked_process
+    clicked_process = True
+    if input_image is not None :
+        if(operations[0].get()): # noise removal
+            pass
+
+        if(operations[1].get()): # brightness enhancement
+            pass
+
+        if(operations[2].get()): # color correction
+            pass
+
+        if(operations[3].get()): # chromatic aberration correction
+            input_image = CACorrection(input_image)
+
+        if(operations[4].get()): # scratch removal
+            pass
+
+        # processed_img = input_image
+
+        rgb_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+
+        # Step 3: Convert the NumPy array to a PIL image
+        processed_img = Image.fromarray(rgb_image)
+        processed_img.thumbnail((300, 300))
         processed_img_tk = ImageTk.PhotoImage(processed_img)
-        label_processed_img.config(image=processed_img_tk)
-        label_processed_img.image = processed_img_tk
+        after_img_label.config(image=processed_img_tk)
+        after_img_label.image = processed_img_tk
         
         # Save output image (optional)
         processed_img.save("output_image.png")
 
+def continue_processing():
+    if (after_img_label.image is not None):
+        before_img_label.config(image=after_img_label.image)
+        before_img_label.image = after_img_label.image
+    time.sleep(1)
+    after_img_label.config(image=None)
+    after_img_label.image = None
+
 # Create the main window
 root = tk.Tk()
-root.title("Image Processing App")
-root.geometry("1000x700")
+root.title("FlawFix: Image Processing App")
+root.geometry("1000x800")
 root.configure(bg="#2c3e50")
 
 # Header with title
 header_frame = tk.Frame(root, bg="#34495e", pady=20)
-header_frame.pack(fill="x")
+header_frame.pack(fill="both")
 
-header_label = tk.Label(header_frame, text="Flaw Fix", font=("Helvetica", 20, "bold"), fg="white", bg="#34495e")
+header_label = tk.Label(header_frame, text="FlawFix", font=("Helvetica", 20, "bold"), fg="white", bg="#34495e")
 header_label.pack()
 
+
+# Frame for the checkboxes
+checkbox_frame = tk.Frame(root, bg="#f0f0f0")
+checkbox_frame.pack(pady=20)
+
+# List of options
+operationNames = ["noise removal", "brightness enhancement", "color correction", "chromatic aberration correction", "scratch removal"]
+operations = []
+
+# Create checkboxes
+checkboxes = []
+for option in operationNames:
+    var = tk.BooleanVar()  # Variable to track the state of the checkbox
+    operations.append(var)
+    chk = ttk.Checkbutton(checkbox_frame, text=option, variable=var)
+    chk.pack(side="left", padx=7, pady=2)  # Align to the left and add some spacing
+    checkboxes.append((var, option))
+
+
 # Upload Frame
-upload_frame = tk.Frame(root, bg="#2c3e50", pady=20)
+upload_frame = tk.Frame(root, bg="#2c3e50", pady=10)
 upload_frame.pack()
 
 instructions_label = tk.Label(upload_frame, text="Upload an image to process:", font=("Arial", 14), fg="white", bg="#2c3e50")
-instructions_label.pack(pady=10)
+instructions_label.pack(pady=2)
 
 btn_upload = ttk.Button(upload_frame, text="Upload Image", command=upload_image)
 btn_upload.pack(pady=10)
 
 # Create a frame to hold the two images side by side
-frame_images = tk.Frame(root, bg="#2c3e50")
-frame_images.pack(pady=20)
+images_frame = tk.Frame(root, bg="#2c3e50")
+images_frame.pack(pady=20)
 
-# Create the uploaded image label and pack it to the left
-label_uploaded_img = tk.Label(frame_images, bg="#2c3e50")
-label_uploaded_img.pack(side="left", padx=10)  # Add padding between images
+before_img_label = tk.Label(images_frame, bg="#2c3e50")
+before_img_label.pack(side="left", padx=10)  
 
-# Create the processed image label and pack it to the left (side by side with the first label)
-label_processed_img = tk.Label(frame_images, bg="#2c3e50")
-label_processed_img.pack(side="left", padx=10)  # Add padding between images
+after_img_label = tk.Label(images_frame, bg="#2c3e50")
+after_img_label.pack(side="left", padx=10) 
 
 # Process Button
 btn_process = ttk.Button(root, text="Process Image", command=process_image)
 btn_process.pack(pady=20)
 
-# Processed Image Display
-
-# Styling with ttkbootstrap
-try:
-    import ttkbootstrap as ttkb
-    style = ttkb.Style("superhero")  # Try other themes like 'darkly', 'flatly', etc.
-    root.tk.call("source", ttkb.TTK_THEME_PATH)
-except ImportError:
-    pass
+btn_continue = ttk.Button(root, text="Continue Processing", command=continue_processing)
+btn_continue.pack(pady=10)  # Show the button
 
 # Run the application
 root.mainloop()

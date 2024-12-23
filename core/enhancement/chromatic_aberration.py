@@ -84,7 +84,7 @@ def CACorrection(src):
 
 def main():
     # Load the source image
-    src = cv2.imread("CA4.jpg", cv2.IMREAD_COLOR)
+    src = cv2.imread("output_image.png", cv2.IMREAD_COLOR)
     if src is None:
         print("Error: Could not read the input image.")
         return
