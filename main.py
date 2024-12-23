@@ -1,11 +1,9 @@
 import argparse
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from PIL import Image
+import cv2
 
+from core.preprocessing.brightness import adjust_brightness_to_range
+from core.preprocessing.noise_reduction import apply_noise_removal, rgb_median_filter
 from core.utils.common_functions import show_images
-from core.utils.preprocessing import adjust_brightness_to_range, rgb_median_filter
 
 def main():
     parser = argparse.ArgumentParser()
@@ -23,12 +21,12 @@ def main():
 
     print("\n🛠️ Processing your image... Please wait...\n")
 
-    image = Image.open(args.input_image)
-
+    image = cv2.imread(args.input_image)
     ################################ PREPROCESSING ################################
     brightness_adjusted_image = adjust_brightness_to_range(image)
-    noise_removed_image = rgb_median_filter(brightness_adjusted_image,(3,3));
-    
+    show_images([brightness_adjusted_image], ['brightness_adjusted_image'])
+
+    noise_removed_image = apply_noise_removal(brightness_adjusted_image)
     show_images([noise_removed_image], ['noise_removed_image'])
 
     ######################## Write Your Function Calls Here #######################
