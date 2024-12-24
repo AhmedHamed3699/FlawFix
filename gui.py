@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 from PIL import Image, ImageTk, ImageFilter
 import cv2
-import time
 
 from core.enhancement.chromatic_aberration import CACorrection
 from core.preprocessing.noise_reduction import apply_noise_removal
@@ -20,14 +19,9 @@ def upload_image():
 
     file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.*")])
     if file_path:
-        # Open and display the uploaded image
-        # uploaded_img = Image.open(file_path)
         uploaded_img_cv = cv2.imread(file_path, cv2.IMREAD_COLOR)
 
-        # Step 2: Convert from BGR to RGB
         rgb_image = cv2.cvtColor(uploaded_img_cv, cv2.COLOR_BGR2RGB)
-
-        # Step 3: Convert the NumPy array to a PIL image
         uploaded_img = Image.fromarray(rgb_image)
 
         uploaded_img.thumbnail((300, 300))  # Resize for display purposes
@@ -59,18 +53,14 @@ def process_image():
         if (operations[4].get()):  # scratch removal
             input_image = scratch_removal(input_image)
 
-        # processed_img = input_image
-
         rgb_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
-        # Step 3: Convert the NumPy array to a PIL image
         processed_img = Image.fromarray(rgb_image)
         processed_img.thumbnail((300, 300))
         processed_img_tk = ImageTk.PhotoImage(processed_img)
         after_img_label.config(image=processed_img_tk)
         after_img_label.image = processed_img_tk
-
-        # Save output image (optional)
+        
         processed_img.save("output_image.png")
 
 
@@ -78,7 +68,6 @@ def continue_processing():
     if (after_img_label.image is not None):
         before_img_label.config(image=after_img_label.image)
         before_img_label.image = after_img_label.image
-    time.sleep(1)
     after_img_label.config(image=None)
     after_img_label.image = None
 
