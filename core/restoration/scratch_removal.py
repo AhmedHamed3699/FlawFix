@@ -1,9 +1,8 @@
 import numpy as np
 import cv2 as cv
-import inpainting
 
 from core.utils.morphology import dilation, erosion, opening, closing, top_hat
-
+from core.restoration.inpainting import inpaint_region
 
 def scratch_detection(img):
 
@@ -44,6 +43,6 @@ def scratch_removal(img):
 
     mask = scratch_detection_faster(mask)
 
-    # result = cv.inpaint(img, mask, 3, cv.INPAINT_TELEA)
-    result= inpainting.inpaint_region(img,mask,3)
+    result = cv.inpaint(img, mask, 3, cv.INPAINT_TELEA)
+    # result = inpaint_region(img,mask,3)
     return result
